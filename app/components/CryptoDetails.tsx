@@ -1,5 +1,6 @@
-import { Modal, StyleSheet, TouchableOpacity } from "react-native";
-import { Text, View } from "../../components/Themed";
+import React, { useMemo } from "react";
+import { Modal, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Text } from "../../components/Themed";
 import { Crypto } from "@/app/types/general";
 import useCryptoStore from "../zustand/store";
 import { Icon } from "../utils/Icon";
@@ -10,41 +11,78 @@ interface CryptoDetailsProps {
   selectedCrypto: Crypto;
 }
 
-export default function CryptoDetails(props: CryptoDetailsProps) {
-  if (!props.selectedCrypto) return null;
-  const { showDetails, setShowDetails, selectedCrypto } = props;
+const CryptoDetails: React.FC<CryptoDetailsProps> = ({
+  showDetails,
+  setShowDetails,
+  selectedCrypto,
+}) => {
   const { favorites, toggleFavorite } = useCryptoStore();
-  const isFavorite = favorites.some((fav: any) => fav.id === selectedCrypto.id);
+
+  const isFavorite = useMemo(
+    () => favorites.some((fav: Crypto) => fav.id === selectedCrypto.id),
+    [favorites, selectedCrypto.id]
+  );
+
+  const handleClose = () => setShowDetails(false);
+
+  if (!selectedCrypto) return null;
+
   return (
     <Modal
       visible={showDetails}
       animationType="slide"
-      onRequestClose={() => setShowDetails(false)}
+      onRequestClose={handleClose}
     >
       <View style={styles.modalContainer}>
         <Text style={styles.modalTitle}>{selectedCrypto.name}</Text>
-        <Text>Price: ${selectedCrypto.price_usd}</Text>
-        <Text>Symbol: {selectedCrypto.symbol}</Text>
+        <Text style={styles.cryptoDetail}>
+          Price: ${selectedCrypto.price_usd}
+        </Text>
+        <Text style={styles.cryptoDetail}>Symbol: {selectedCrypto.symbol}</Text>
+
         <TouchableOpacity onPress={() => toggleFavorite(selectedCrypto)}>
-          <Text style={styles.favoriteButton}>
-            {isFavorite ? (
-              <Icon name="heart" color="#2f95dc" />
-            ) : (
-              <Icon name="heart" color="gray" />
-            )}
-          </Text>
+          <Icon name="heart" color={isFavorite ? "#2f95dc" : "gray"} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => setShowDetails(false)}>
-          <Text style={styles.closeButton}>Close</Text>
+
+        <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
+          <Text style={styles.closeButtonText}>Cerrar</Text>
         </TouchableOpacity>
       </View>
     </Modal>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  modalContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
-  modalTitle: { fontSize: 24, marginBottom: 16 },
-  favoriteButton: { marginTop: 20, color: "green" },
-  closeButton: { marginTop: 20, color: "blue" },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+    backgroundColor: "#f5f5f5",
+  },
+  modalTitle: {
+    fontSize: 24,
+    marginBottom: 16,
+    fontWeight: "bold",
+    color: "#333",
+  },
+  cryptoDetail: {
+    fontSize: 18,
+    marginVertical: 4,
+    color: "#555",
+  },
+  closeButton: {
+    marginTop: 30,
+    backgroundColor: "#007BFF",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+  },
+  closeButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
 });
+
+export default CryptoDetails;

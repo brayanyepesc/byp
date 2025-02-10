@@ -1,49 +1,62 @@
-import React from 'react';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Link, Tabs } from 'expo-router';
-import { Pressable } from 'react-native';
-import Colors from '@/constants/Colors';
-import { useColorScheme } from '@/components/useColorScheme';
-import { useClientOnlyValue } from '@/components/useClientOnlyValue';
-import { Icon } from '../utils/Icon';
+import React from "react";
+import { Pressable, StyleSheet } from "react-native";
+import { Link, Tabs } from "expo-router";
+import { FontAwesome } from "@expo/vector-icons";
+import Colors from "@/constants/Colors";
+import { useColorScheme } from "@/components/useColorScheme";
+import { useClientOnlyValue } from "@/components/useClientOnlyValue";
+import { Icon } from "../utils/Icon";
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+const TabLayout: React.FC = () => {
+  const colorScheme = useColorScheme() ?? "light";
+  const activeTintColor = Colors[colorScheme].tint;
+  const textColor = Colors[colorScheme].text;
+
+  const renderHeaderRight = () => (
+    <Link href="/modal" asChild>
+      <Pressable>
+        {({ pressed }) => (
+          <FontAwesome
+            name="info-circle"
+            size={25}
+            color={textColor}
+            style={[styles.headerIcon, { opacity: pressed ? 0.5 : 1 }]}
+          />
+        )}
+      </Pressable>
+    </Link>
+  );
+
+  const screenOptions = {
+    tabBarActiveTintColor: activeTintColor,
+    headerShown: useClientOnlyValue(false, true),
+  };
 
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: useClientOnlyValue(false, true),
-      }}>
+    <Tabs screenOptions={screenOptions}>
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Criptomonedas',
+          title: "Criptomonedas",
           tabBarIcon: ({ color }) => <Icon name="home" color={color} />,
-          headerRight: () => (
-            <Link href="/modal" asChild>
-              <Pressable>
-                {({ pressed }) => (
-                  <FontAwesome
-                    name="info-circle"
-                    size={25}
-                    color={Colors[colorScheme ?? 'light'].text}
-                    style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                  />
-                )}
-              </Pressable>
-            </Link>
-          ),
+          headerRight: renderHeaderRight,
         }}
       />
       <Tabs.Screen
         name="two"
         options={{
-          title: 'Mis favoritas',
+          title: "Mis favoritas",
           tabBarIcon: ({ color }) => <Icon name="heart" color={color} />,
         }}
       />
     </Tabs>
   );
-}
+};
+
+const styles = StyleSheet.create({
+  headerIcon: {
+    marginRight: 15,
+  },
+});
+
+export default TabLayout;
