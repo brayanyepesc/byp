@@ -43,7 +43,7 @@ const TabLayout: React.FC = () => {
         }}
       />
       <Tabs.Screen
-        name="two"
+        name="favorites"
         options={{
           title: "Mis favoritas",
           tabBarIcon: ({ color }) => <Icon name="heart" color={color} />,
