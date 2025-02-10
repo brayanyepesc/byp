@@ -7,6 +7,7 @@ const useCryptoStore = create<CryptoStore>((set) => ({
   filteredCryptos: [],
   loading: false,
   error: null,
+  favorites: [],
 
   fetchCryptos: async () => {
     set({ loading: true, error: null });
@@ -35,6 +36,18 @@ const useCryptoStore = create<CryptoStore>((set) => ({
         crypto.name?.toLowerCase().includes(query.toLowerCase())
       ),
     })),
+
+  toggleFavorite: (crypto) =>
+    set((state) => {
+      const isFavorite = state.favorites.some((fav) => fav.id === crypto.id);
+      if (isFavorite) {
+        return {
+          favorites: state.favorites.filter((fav) => fav.id !== crypto.id),
+        };
+      } else {
+        return { favorites: [...state.favorites, crypto] };
+      }
+    }),
 }));
 
 export default useCryptoStore;

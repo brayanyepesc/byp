@@ -1,20 +1,30 @@
 import {
   FlatList,
+  Modal,
   StyleSheet,
   TextInput,
   TouchableOpacity,
 } from "react-native";
 
 import { Text, View } from "@/components/Themed";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import useCryptoStore from "../zustand/store";
+import { Crypto } from "../types/general";
+import CryptoDetails from "../components/CryptoDetails";
 
 export default function CryptoList() {
+  const [selectedCrypto, setSelectedCrypto] = useState<Crypto | null>(null);
+  const [showDetails, setShowDetails] = useState(false);
   const { filteredCryptos, fetchCryptos, filterCryptos } = useCryptoStore();
 
   useEffect(() => {
     fetchCryptos();
   }, [fetchCryptos]);
+
+  const openDetails = (crypto: Crypto) => {
+    setSelectedCrypto(crypto);
+    setShowDetails(true);
+  };
 
   return (
     <View style={{ padding: 20 }}>
@@ -29,9 +39,7 @@ export default function CryptoList() {
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.cryptoItemContainer}
-            onPress={() =>
-              alert(`Name: ${item.name}\\nPrice: $${item.price_usd}`)
-            }
+            onPress={() => openDetails(item)}
           >
             <Text style={{ fontSize: 16 }}>
               {item.name} ({item.symbol})
@@ -43,6 +51,13 @@ export default function CryptoList() {
           </TouchableOpacity>
         )}
       />
+      {selectedCrypto && (
+        <CryptoDetails
+          showDetails={showDetails}
+          setShowDetails={setShowDetails}
+          selectedCrypto={selectedCrypto}
+        />
+      )}
     </View>
   );
 }
