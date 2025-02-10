@@ -19,8 +19,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Tab One',
-          tabBarIcon: ({ color }) => <Icon name="code" color={color} />,
+          title: 'Criptomonedas',
+          tabBarIcon: ({ color }) => <Icon name="home" color={color} />,
           headerRight: () => (
             <Link href="/modal" asChild>
               <Pressable>
