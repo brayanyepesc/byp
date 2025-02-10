@@ -41,7 +41,7 @@ export default function TabLayout() {
         name="two"
         options={{
           title: 'Mis favoritas',
-          tabBarIcon: ({ color }) => <Icon name="code" color={color} />,
+          tabBarIcon: ({ color }) => <Icon name="heart" color={color} />,
         }}
       />
     </Tabs>
