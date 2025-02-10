@@ -1,31 +1,45 @@
-import { StyleSheet } from 'react-native';
+import { FlatList, StyleSheet, TouchableOpacity } from "react-native";
+import { Text, View } from "@/components/Themed";
+import useCryptoStore from "../zustand/store";
+import { Icon } from "../utils/Icon";
 
-import EditScreenInfo from '@/components/EditScreenInfo';
-import { Text, View } from '@/components/Themed';
-
-export default function TabTwoScreen() {
+export default function Favorites() {
+  const { favorites, toggleFavorite } = useCryptoStore();
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Tab Two</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="app/(tabs)/two.tsx" />
+    <View style={{ padding: 20 }}>
+      {favorites.length > 0 ? (
+        <FlatList
+          data={favorites}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <TouchableOpacity style={styles.cryptoItemContainer}>
+              <Text style={{ fontSize: 16 }}>
+                {item.name} ({item.symbol})
+              </Text>
+              <Text onPress={() => toggleFavorite(item)}>
+                <Icon name="heart" color="#2f95dc" />
+              </Text>
+            </TouchableOpacity>
+          )}
+        />
+      ) : (
+        <Text>No hay favoritos</Text>
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
+  cryptoItemContainer: {
+    padding: 10,
+    backgroundColor: "#fff",
+    borderBottomWidth: 0.5,
+    borderBottomColor: "#f6f6f6",
+    marginBottom: 10,
+    borderRadius: 10,
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
   },
 });
